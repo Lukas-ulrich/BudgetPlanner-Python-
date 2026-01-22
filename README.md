@@ -11,10 +11,16 @@ CSV / PDF – Data export
 reportlab – PDF creation
 
 /screenshots
-├── overview.png <img width="1895" height="913" alt="Screenshot 2026-01-22 205907" src="https://github.com/user-attachments/assets/289efc8c-d4a7-46d5-add1-e792171c8d81" />
-├── categories.png <img width="1904" height="1002" alt="Screenshot 2026-01-22 205756" src="https://github.com/user-attachments/assets/379aa2bd-8447-471c-9968-9a717d0b02cb" />
-├── charts.png <img width="708" height="456" alt="Screenshot 2026-01-22 205852" src="https://github.com/user-attachments/assets/9ec32c34-1097-460a-a6b0-2fad6b058b7d" />
-└── export.png <img width="1875" height="937" alt="Screenshot 2026-01-22 205821" src="https://github.com/user-attachments/assets/682ebcf4-fc2b-4a98-9dc5-5d78ec813d85" />
+├── overview .png 
+<img width="1895" height="913" alt="Screenshot 2026-01-22 205907" src="https://github.com/user-attachments/assets/289efc8c-d4a7-46d5-add1-e792171c8d81" />
+├── categories.png 
+<img width="1904" height="1002" alt="Screenshot 2026-01-22 205756" src="https://github.com/user-attachments/assets/379aa2bd-8447-471c-9968-9a717d0b02cb" />
+├── charts.png
+
+<img width="708" height="456" alt="Screenshot 2026-01-22 205852" src="https://github.com/user-attachments/assets/9ec32c34-1097-460a-a6b0-2fad6b058b7d" />
+
+└── export.png
+<img width="1875" height="937" alt="Screenshot 2026-01-22 205821" src="https://github.com/user-attachments/assets/682ebcf4-fc2b-4a98-9dc5-5d78ec813d85" />
 
 Installation & Start
 Requirements
