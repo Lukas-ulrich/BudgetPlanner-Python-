@@ -45,6 +45,13 @@ implement clean data persistence without an external database
 write Python code in a structured, maintainable, and extensible way
 I started this project to help friends and family in their everyday lives and give them a useful tool for managing their finances. 
 
+## Features
+- Income & expense tracking
+- Category-based budgeting
+- Visual charts (matplotlib)
+- CSV & PDF export
+- Local JSON persistence
+
 Planned enhancements
 Annual overview with average values
 Advanced statistics (trends, forecasts)
