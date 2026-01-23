@@ -59,14 +59,6 @@ Import of account CSV files
 Portable .exe version (PyInstaller)
 Unit tests for core logic
 
-Copyright (C) Lukas Ulrich - All Rights Reserved
-
-This source code is protected under international copyright law. All rights
-reserved and protected by the copyright holders.
-The source code is confidential and only available to authorized individuals with the
-permission of the copyright holders. If you encounter this source code and do not have
-permission, please contact the copyright holders and delete this file.
-
 Author
 Lukas Ulrich
 Computer science student
