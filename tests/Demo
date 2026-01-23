@@ -1,0 +1,394 @@
+import React, { useState, useEffect } from 'react';
+import { Download, Moon, Sun, Plus, Trash2, Calendar } from 'lucide-react';
+
+const BudgetPlannerDemo = () => {
+  const [darkMode, setDarkMode] = useState(true);
+  const [currentMonth, setCurrentMonth] = useState('2025-01');
+  const [activeTab, setActiveTab] = useState('budget');
+  const [deleteMode, setDeleteMode] = useState(false);
+  const [savingsGoal, setSavingsGoal] = useState('500');
+
+  const [structure, setStructure] = useState({
+    'Einnahmen': {
+      'Gehalt': ['Gehalt Hauptjob', 'Nebentätigkeit'],
+      'Sonstiges': ['Geschenke']
+    },
+    'Fixkosten': {
+      'Wohnen': ['Miete', 'Strom', 'Wasser'],
+      'Versicherungen': ['Krankenversicherung']
+    },
+    'Variable Kosten': {
+      'Essen': ['Supermarkt', 'Restaurant'],
+      'Freizeit': ['Abos', 'Urlaub']
+    }
+  });
+
+  const [values, setValues] = useState({});
+
+  useEffect(() => {
+    setValues({
+      'Einnahmen-Gehalt-Gehalt Hauptjob': { amount: '2500', note: '' },
+      'Einnahmen-Gehalt-Nebentätigkeit': { amount: '400', note: 'Freelance' },
+      'Fixkosten-Wohnen-Miete': { amount: '850', note: '' },
+      'Fixkosten-Wohnen-Strom': { amount: '80', note: '' },
+      'Fixkosten-Wohnen-Wasser': { amount: '45', note: '' },
+      'Fixkosten-Versicherungen-Krankenversicherung': { amount: '320', note: '' },
+      'Variable Kosten-Essen-Supermarkt': { amount: '450', note: '' },
+      'Variable Kosten-Essen-Restaurant': { amount: '120', note: '' },
+      'Variable Kosten-Freizeit-Abos': { amount: '35', note: 'Netflix' }
+    });
+  }, []);
+
+  const getValue = (mainCat, subCat, item) => {
+    const key = `${mainCat}-${subCat}-${item}`;
+    return values[key] || { amount: '0', note: '' };
+  };
+
+  const setValue = (mainCat, subCat, item, field, value) => {
+    const key = `${mainCat}-${subCat}-${item}`;
+    setValues(prev => ({
+      ...prev,
+      [key]: { ...prev[key], [field]: value }
+    }));
+  };
+
+  const calculateTotals = () => {
+    let income = 0;
+    let expense = 0;
+    let fixed = 0;
+    let variable = 0;
+    const categoryTotals = {};
+
+    Object.entries(structure).forEach(([mainCat, subCats]) => {
+      categoryTotals[mainCat] = 0;
+      Object.entries(subCats).forEach(([subCat, items]) => {
+        items.forEach(item => {
+          const val = parseFloat(getValue(mainCat, subCat, item).amount) || 0;
+          categoryTotals[mainCat] += val;
+          
+          if (mainCat.includes('Einnahmen')) {
+            income += val;
+          } else {
+            expense += val;
+            if (mainCat.includes('Fix')) {
+              fixed += val;
+            } else {
+              variable += val;
+            }
+          }
+        });
+      });
+    });
+
+    return { income, expense, fixed, variable, balance: income - expense, categoryTotals };
+  };
+
+  const totals = calculateTotals();
+
+  const getTop3Expenses = () => {
+    const expenses = [];
+    Object.entries(structure).forEach(([mainCat, subCats]) => {
+      if (mainCat.includes('Einnahmen')) return;
+      Object.entries(subCats).forEach(([subCat, items]) => {
+        const total = items.reduce((sum, item) => {
+          return sum + (parseFloat(getValue(mainCat, subCat, item).amount) || 0);
+        }, 0);
+        if (total > 0) {
+          expenses.push({ name: `${mainCat} / ${subCat}`, value: total });
+        }
+      });
+    });
+    return expenses.sort((a, b) => b.value - a.value).slice(0, 3);
+  };
+
+  const addItem = (mainCat, subCat) => {
+    const itemName = prompt(`Neuer Posten in ${subCat}:`);
+    if (itemName && itemName.trim()) {
+      setStructure(prev => ({
+        ...prev,
+        [mainCat]: {
+          ...prev[mainCat],
+          [subCat]: [...prev[mainCat][subCat], itemName]
+        }
+      }));
+    }
+  };
+
+  const deleteItem = (mainCat, subCat, item) => {
+    if (confirm(`"${item}" wirklich löschen?`)) {
+      setStructure(prev => {
+        const newStructure = { ...prev };
+        newStructure[mainCat][subCat] = newStructure[mainCat][subCat].filter(i => i !== item);
+        return newStructure;
+      });
+    }
+  };
+
+  const exportCSV = () => {
+    let csv = 'Hauptkategorie;Unterkategorie;Posten;Betrag;Notiz\n';
+    Object.entries(structure).forEach(([mainCat, subCats]) => {
+      Object.entries(subCats).forEach(([subCat, items]) => {
+        items.forEach(item => {
+          const val = getValue(mainCat, subCat, item);
+          csv += `${mainCat};${subCat};${item};${val.amount};${val.note}\n`;
+        });
+      });
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `budget_${currentMonth}.csv`;
+    link.click();
+  };
+
+  const autoFill = () => {
+    alert('Auto-Fill würde hier Fixkosten vom Vormonat übernehmen. In der echten App werden Daten aus JSON-Dateien geladen.');
+  };
+
+  const theme = darkMode ? {
+    bg: '#1a1a1a',
+    bgSecondary: '#252526',
+    bgTertiary: '#2d2d30',
+    text: 'white',
+    textSecondary: '#e0e0e0',
+    textMuted: '#b0b0b0'
+  } : {
+    bg: '#f5f5f5',
+    bgSecondary: '#ffffff',
+    bgTertiary: '#e8e8e8',
+    text: '#000000',
+    textSecondary: '#333333',
+    textMuted: '#666666'
+  };
+
+  return (
+    <div style={{ background: theme.bg, color: theme.text, minHeight: '100vh', fontFamily: 'system-ui' }}>
+      <div style={{ background: theme.bgTertiary, padding: '16px 24px', borderBottom: `1px solid ${theme.bgSecondary}` }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>💰 BudgetPlanner Pro - Demo</h1>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <Calendar size={20} />
+              <input 
+                type="month" 
+                value={currentMonth} 
+                onChange={(e) => setCurrentMonth(e.target.value)}
+                style={{ padding: '6px 12px', borderRadius: '4px', border: 'none', background: theme.bgSecondary, color: theme.text }}
+              />
+            </div>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button 
+              onClick={() => setDarkMode(!darkMode)} 
+              style={{ 
+                padding: '8px 12px', 
+                borderRadius: '4px', 
+                border: 'none', 
+                background: '#5c2d91', 
+                color: 'white', 
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+            <button 
+              onClick={autoFill} 
+              style={{ 
+                padding: '8px 16px', 
+                borderRadius: '4px', 
+                border: 'none', 
+                background: '#5c2d91', 
+                color: 'white', 
+                cursor: 'pointer' 
+              }}
+            >
+              🔄 Auto-Fill
+            </button>
+            <button 
+              onClick={exportCSV} 
+              style={{ 
+                padding: '8px 12px', 
+                borderRadius: '4px', 
+                border: 'none', 
+                background: '#107c10', 
+                color: 'white', 
+                cursor: 'pointer', 
+                display: 'flex', 
+                gap: '6px', 
+                alignItems: 'center' 
+              }}
+            >
+              <Download size={16} /> CSV
+            </button>
+            <button 
+              onClick={() => setDeleteMode(!deleteMode)} 
+              style={{ 
+                padding: '8px 12px', 
+                borderRadius: '4px', 
+                border: 'none', 
+                background: deleteMode ? '#d13438' : theme.bgSecondary, 
+                color: deleteMode ? 'white' : theme.text, 
+                cursor: 'pointer' 
+              }}
+            >
+              {deleteMode ? '✓ Löschmodus' : '🗑️ Löschmodus'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '16px', padding: '24px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', maxHeight: '85vh' }}>
+          {Object.entries(structure).map(([mainCat, subCats]) => {
+            const categoryTotal = totals.categoryTotals[mainCat] || 0;
+            
+            return (
+              <div key={mainCat} style={{ background: theme.bgSecondary, padding: '16px', borderRadius: '8px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <h3 style={{ margin: 0, fontSize: '16px' }}>
+                    {mainCat.includes('Einnahmen') ? '💰' : mainCat.includes('Fix') ? '🏠' : '🛒'} {mainCat}
+                  </h3>
+                  <span style={{ fontWeight: 'bold', color: '#ffd700' }}>
+                    Σ {categoryTotal.toFixed(2)}€
+                  </span>
+                </div>
+                
+                {Object.entries(subCats).map(([subCat, items]) => (
+                  <div key={subCat} style={{ marginBottom: '12px' }}>
+                    <div style={{ background: theme.bgTertiary, padding: '8px 12px', borderRadius: '4px', marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: 'bold', fontSize: '14px' }}>📁 {subCat}</span>
+                      <button 
+                        onClick={() => addItem(mainCat, subCat)} 
+                        style={{ 
+                          padding: '4px 8px', 
+                          borderRadius: '4px', 
+                          border: 'none', 
+                          background: '#107c10', 
+                          color: 'white', 
+                          cursor: 'pointer', 
+                          fontSize: '12px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}
+                      >
+                        <Plus size={14} /> Neu
+                      </button>
+                    </div>
+                    
+                    {items.map(item => {
+                      const val = getValue(mainCat, subCat, item);
+                      return (
+                        <div key={item} style={{ display: 'grid', gridTemplateColumns: deleteMode ? '1fr 120px 200px 40px' : '1fr 120px 200px', gap: '8px', alignItems: 'center', marginBottom: '6px' }}>
+                          <span style={{ fontSize: '14px' }}>• {item}</span>
+                          <input
+                            type="number"
+                            value={val.amount}
+                            onChange={(e) => setValue(mainCat, subCat, item, 'amount', e.target.value)}
+                            style={{ padding: '6px', borderRadius: '4px', border: 'none', background: theme.bgTertiary, color: theme.text, textAlign: 'right' }}
+                            placeholder="0.00"
+                          />
+                          <input
+                            type="text"
+                            value={val.note}
+                            onChange={(e) => setValue(mainCat, subCat, item, 'note', e.target.value)}
+                            style={{ padding: '6px', borderRadius: '4px', border: 'none', background: theme.bgTertiary, color: theme.textMuted }}
+                            placeholder="Notiz..."
+                          />
+                          {deleteMode && (
+                            <button 
+                              onClick={() => deleteItem(mainCat, subCat, item)} 
+                              style={{ 
+                                padding: '6px', 
+                                borderRadius: '4px', 
+                                border: 'none', 
+                                background: '#d13438', 
+                                color: 'white', 
+                                cursor: 'pointer',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center'
+                              }}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+
+        <div style={{ width: '340px', background: theme.bgSecondary, padding: '20px', borderRadius: '8px', height: 'fit-content', position: 'sticky', top: '24px' }}>
+          <h3 style={{ margin: '0 0 16px 0' }}>📊 Finanzübersicht</h3>
+          
+          <div style={{ background: theme.bgTertiary, padding: '12px', borderRadius: '6px', marginBottom: '8px' }}>
+            <div style={{ fontSize: '12px', color: theme.textMuted }}>💰 Gesamteinnahmen</div>
+            <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#107c10' }}>{totals.income.toFixed(2)} €</div>
+          </div>
+          
+          <div style={{ background: theme.bgTertiary, padding: '12px', borderRadius: '6px', marginBottom: '8px' }}>
+            <div style={{ fontSize: '12px', color: theme.textMuted }}>💸 Gesamtausgaben</div>
+            <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#d13438' }}>{totals.expense.toFixed(2)} €</div>
+          </div>
+          
+          <div style={{ background: theme.bgTertiary, padding: '16px', borderRadius: '6px', marginBottom: '16px' }}>
+            <div style={{ fontSize: '12px', color: theme.textMuted }}>💵 Saldo</div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold', color: totals.balance >= 0 ? '#107c10' : '#d13438' }}>
+              {totals.balance.toFixed(2)} €
+            </div>
+          </div>
+
+          <hr style={{ border: `1px solid ${theme.bgTertiary}`, margin: '16px 0' }} />
+
+          <div style={{ marginBottom: '16px' }}>
+            <label style={{ fontSize: '12px', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>🎯 Sparziel (Monat)</label>
+            <input
+              type="number"
+              value={savingsGoal}
+              onChange={(e) => setSavingsGoal(e.target.value)}
+              style={{ width: '100%', padding: '8px', borderRadius: '4px', border: 'none', background: theme.bgTertiary, color: theme.text }}
+            />
+            <div style={{ fontSize: '12px', color: theme.textMuted, marginTop: '6px' }}>
+              Fortschritt: {Math.max(0, totals.balance).toFixed(2)} / {savingsGoal} ({((Math.max(0, totals.balance) / parseFloat(savingsGoal || 1)) * 100).toFixed(1)}%)
+            </div>
+          </div>
+
+          <hr style={{ border: `1px solid ${theme.bgTertiary}`, margin: '16px 0' }} />
+
+          <h4 style={{ fontSize: '14px', marginBottom: '12px' }}>🔝 Top-3 Ausgaben</h4>
+          {getTop3Expenses().map((item, i) => (
+            <div key={i} style={{ background: theme.bgTertiary, padding: '8px 12px', borderRadius: '4px', marginBottom: '6px', fontSize: '13px' }}>
+              {i + 1}. {item.name}: {item.value.toFixed(2)} €
+            </div>
+          ))}
+
+          <hr style={{ border: `1px solid ${theme.bgTertiary}`, margin: '16px 0' }} />
+
+          <div style={{ fontSize: '13px', color: theme.textSecondary }}>
+            <div style={{ marginBottom: '6px' }}>📈 Sparquote: {totals.income > 0 ? ((totals.balance / totals.income) * 100).toFixed(1) : 0}%</div>
+            <div style={{ marginBottom: '6px' }}>🔒 Fixkosten: {totals.fixed.toFixed(2)} €</div>
+            <div>🔄 Variable Kosten: {totals.variable.toFixed(2)} €</div>
+          </div>
+
+          <div style={{ marginTop: '24px', padding: '12px', background: '#0078d4', borderRadius: '6px', color: 'white', fontSize: '13px', textAlign: 'center' }}>
+            ℹ️ Dies ist eine <strong>interaktive Demo</strong>.<br/>
+            Alle Features funktionieren!<br/>
+            <small style={{ opacity: 0.8 }}>Python-Version hat zusätzlich Charts & PDF-Export</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default BudgetPlannerDemo;
