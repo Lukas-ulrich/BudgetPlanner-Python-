@@ -1,7 +1,11 @@
 __pycache__/
 *.pyc
 .env
-exports/*.pdf
-exports/*.csv
-profiles/**/data.json
+
+exports/
+profiles/
+
+*.pdf
+*.csv
+
 
