@@ -1,7 +1,7 @@
 __pycache__/
 *.pyc
 .env
-.idea/
-.vscode/
-*.zip
-data/*.json
+exports/*.pdf
+exports/*.csv
+profiles/**/data.json
+
