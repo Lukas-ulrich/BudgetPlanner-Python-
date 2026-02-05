@@ -12,15 +12,19 @@ reportlab – PDF creation
 
 /screenshots
 ├── overview .png 
-<img width="1895" height="913" alt="Screenshot 2026-01-22 205907" src="https://github.com/user-attachments/assets/289efc8c-d4a7-46d5-add1-e792171c8d81" />
-├── categories.png 
-<img width="1904" height="1002" alt="Screenshot 2026-01-22 205756" src="https://github.com/user-attachments/assets/379aa2bd-8447-471c-9968-9a717d0b02cb" />
-├── charts.png
+<img width="1900" height="987" alt="Screenshot 2026-02-05 210345" src="https://github.com/user-attachments/assets/dd27f51d-2dc0-49fe-bf98-d31a946faf8c" />
 
-<img width="708" height="456" alt="Screenshot 2026-01-22 205852" src="https://github.com/user-attachments/assets/9ec32c34-1097-460a-a6b0-2fad6b058b7d" />
+├── categories.png 
+<img width="1906" height="952" alt="Screenshot 2026-02-05 210451" src="https://github.com/user-attachments/assets/9357817f-e4f5-452d-a39a-a1e786d74996" />
+
+<img width="1899" height="984" alt="Screenshot 2026-02-05 210503" src="https://github.com/user-attachments/assets/fbc13b09-4a7c-4d72-9b99-19b463a1d316" />
+
+<img width="1908" height="961" alt="Screenshot 2026-02-05 210439" src="https://github.com/user-attachments/assets/f2ce91d2-e4b1-437a-a963-ca9acd9853b5" />
 
 └── export.png
-<img width="1875" height="937" alt="Screenshot 2026-01-22 205821" src="https://github.com/user-attachments/assets/682ebcf4-fc2b-4a98-9dc5-5d78ec813d85" />
+
+<img width="691" height="501" alt="Screenshot 2026-02-05 210815" src="https://github.com/user-attachments/assets/99f60577-fed0-466d-b500-7edfe3c2528f" />
+
 
 Installation & Start
 Requirements
@@ -51,13 +55,11 @@ I started this project to help friends and family in their everyday lives and gi
 - Visual charts (matplotlib)
 - CSV & PDF export
 - Local JSON persistence
-
-Planned enhancements
-Annual overview with average values
-Advanced statistics (trends, forecasts)
-Import of account CSV files
-Portable .exe version (PyInstaller)
-Unit tests for core logic
+- Annual overview with average values
+- Advanced statistics (trends, forecasts)
+- Import of account CSV files
+- Portable .exe version (PyInstaller)
+- Unit tests for core logic
 
 Author
 Lukas Ulrich
